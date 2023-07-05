@@ -73,6 +73,8 @@ void setup() {
   pinMode(pinoDigitalAcionamentoBuzzerAtuador, OUTPUT);
   pinMode(pinoDigitalAcionamentoReleBombaAgua, OUTPUT);
 
+  digitalWrite(pinoDigitalAcionamentoReleBombaAgua, HIGH);
+
   conectarWiFi();
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);
 
@@ -177,9 +179,9 @@ void acionarBuzzerContinuo(int frequency, int duration) {
 }
 
 void acionarReleBombaAgua(int duration) {
-  digitalWrite(pinoDigitalAcionamentoReleBombaAgua, HIGH);
-  delay(duration);
   digitalWrite(pinoDigitalAcionamentoReleBombaAgua, LOW);
+  delay(duration);
+  digitalWrite(pinoDigitalAcionamentoReleBombaAgua, HIGH);
 }
 
 void acionarAtuadorBombaIrrigacao(int duration) {
