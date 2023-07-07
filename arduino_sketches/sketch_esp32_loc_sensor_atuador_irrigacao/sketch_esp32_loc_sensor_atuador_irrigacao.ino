@@ -30,6 +30,7 @@ const int daylightOffset_sec = 0;
 
 // Task handles
 TaskHandle_t atuadorMQTTTaskHandle;
+TaskHandle_t sensorReadingsTaskHandle;
 
 // Tópicos MQTT
 std::string topicoMQTTReceberComandoAtuadorString = "planto-iot-sensores/atuadores/" + std::string(UUID_ATUADOR_00001) + "/A";
@@ -51,9 +52,9 @@ int millisAcionamento = 0;
 
 // Function declarations
 void atuadorMQTTTask(void* parameter);
+void sensorReadingsTask(void* parameter);
 void subscribeAcionamentoAtuadorTopicMQTT();
-void callbackLidarComMensagensMQTT(char* topic, byte* message, unsigned int length);
-void lerBotaoSOS();
+void callbackLidarComMensagensMQTTAtuador(char* topic, byte* message, unsigned int length);
 void conectarWiFi();
 void conectarMQTT();
 
@@ -75,7 +76,10 @@ void setup() {
 
   digitalWrite(pinoDigitalAcionamentoReleBombaAgua, HIGH);
 
+  // Conectar o WiFi
   conectarWiFi();
+
+  // Definir o servidor MQTT - Host e porta
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);
 
   // Definir o tempo inicial do dispositivo
@@ -83,7 +87,7 @@ void setup() {
 
   // Create MQTT tasks - FreeRTOS
   xTaskCreatePinnedToCore(atuadorMQTTTask, "atuadorMQTTTask", 4096, NULL, 1, &atuadorMQTTTaskHandle, 0);
-  xTaskCreatePinnedToCore(sensorReadingsTask, "sensorReadingsTask", 4096, NULL, 1, NULL, 1);
+  xTaskCreatePinnedToCore(sensorReadingsTask, "sensorReadingsTask", 4096, NULL, 1, &sensorReadingsTaskHandle, 1);
 }
 
 void loop() {
